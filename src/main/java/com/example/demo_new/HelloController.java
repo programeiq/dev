@@ -37,7 +37,7 @@ public class HelloController {
         PlayerInfo myInfo = new PlayerInfo("あなた(Player)", 50);
 
         try {
-            Socket socket = IO.socket("wss://my-game-server-v7nc.onrender.com");
+            Socket socket = IO.socket("wss://https://my-game-server-v7nc.onrender.comwss://wss://.onrender.com");
 
             socket.on("waiting", args -> {
                 Platform.runLater(() -> srcButton.setText("他のプレイヤーを検索中... "));
