@@ -15,7 +15,7 @@ public class GameServer {
         // Renderは環境変数 "PORT" でポートを指定してくるため、それを最優先で読み込みます。
         // ローカル（自分のPC）で動かす時は、自動的に後ろの 9092 番が使われます。
         String portEnv = System.getenv("PORT");
-        int port = (portEnv != null) ? Integer.parseInt(portEnv) : 9092;
+        int port = (portEnv != null) ? Integer.parseInt(portEnv) : 10000;
         config.setPort(port);
 
         final SocketIOServer server = new SocketIOServer(config);

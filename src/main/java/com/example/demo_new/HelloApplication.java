@@ -64,7 +64,7 @@ public class HelloApplication extends Application {
             opts.webSocketFactory = okHttpClient;
             opts.callFactory = okHttpClient;
 
-            String serverUrl = "https://my-game-server-v2.onrender.com";
+            String serverUrl = "https://demo-new-1.onrender.com";
             System.out.println("サーバーに接続を試みています... URL: " + serverUrl);
 
             socket = IO.socket(serverUrl, opts);
