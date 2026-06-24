@@ -8,7 +8,7 @@
     <artifactId>demo_new</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>demo_new</name>
-K
+
     <dependencies>
         <dependency>
             <groupId>org.openjfx</groupId>
