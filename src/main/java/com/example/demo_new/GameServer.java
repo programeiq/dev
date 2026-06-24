@@ -5,32 +5,42 @@ import com.corundumstudio.socketio.SocketIOServer;
 
 public class GameServer {
     public static void main(String[] args) {
-        Configuration config = new Configuration();
-
-        // 🚀 【超重要】Renderの上で動かすための設定
-        // localhost ではなく "0.0.0.0" にすることで、ネットからの接続をすべて受け付けます！
-        config.setHostname("0.0.0.0");
-
-        // 🚀 【超重要】Renderから指定されるポート番号を自動で読み込む設定
-        // Renderは環境変数 "PORT" でポートを指定してくるため、それを最優先で読み込みます。
-        // ローカル（自分のPC）で動かす時は、自動的に後ろの 9092 番が使われます。
+        // 1. Renderの環境変数からポート番号を自動で読み込む（お二人の完璧なロジック！）
         String portEnv = System.getenv("PORT");
-        int port = (portEnv != null) ? Integer.parseInt(portEnv) : 10000;
+        int port = (portEnv != null) ? Integer.parseInt(portEnv) : 9092;
+
+        Configuration config = new Configuration();
+        config.setHostname("0.0.0.0"); // すべての外からの接続を受け付ける設定
         config.setPort(port);
 
+        // 🔥【超超超重要：ここが受け止める準備！】
+        // Renderの逆プロキシ（HTTPS/WSS）から届く通信を、Socket.IOが正常に解読できるようにする魔法の設定
+        config.setAllowHeaders("*");
+        config.setOrigin("*");
+
+        // 2. Socket.IOサーバーの起動
         final SocketIOServer server = new SocketIOServer(config);
 
-        // クライアントが接続してきたときの処理
+        // 🟢 クライアント（プレイヤー）が接続してきたときのイベント
         server.addConnectListener(client -> {
-            System.out.println("クライアントが接続しました: " + client.getSessionId());
+            System.out.println("🟢 [サーバーログ] プレイヤーが接続してきました！ ID: " + client.getSessionId());
+            // ここに「プレイヤーが入室したよ」という処理があれば書く
         });
 
-        // クライアントが切断したときの処理
+        // 🔴 クライアントが切断したときのイベント
         server.addDisconnectListener(client -> {
-            System.out.println("クライアントが切断しました: " + client.getSessionId());
+            System.out.println("❌ [サーバーログ] プレイヤーが切断しました。 ID: " + client.getSessionId());
         });
 
-        System.out.println("ゲームサーバーを起動しました！ポート: " + port);
+        // 3. サーバーをスタート！
+        System.out.println("🚀 🚀 🚀 GameServerが起動しました！！！ ポート番号: " + port);
         server.start();
+
+        // サーバーが終了しないようにスリープで維持する
+        try {
+            Thread.sleep(Integer.MAX_VALUE);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

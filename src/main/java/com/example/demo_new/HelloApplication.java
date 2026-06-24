@@ -9,7 +9,6 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import okhttp3.OkHttpClient;
 
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 public class HelloApplication extends Application {
@@ -18,58 +17,57 @@ public class HelloApplication extends Application {
     @Override
     public void start(Stage stage) {
         try {
-            // 1. 画面の読み込み（既存のJavaFXの処理）
+            // 1. 画面の読み込み（JavaFXのいつもの処理）
             FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("hello-view.fxml"));
             Scene scene = new Scene(fxmlLoader.load(), 320, 240);
             stage.setTitle("JavaFX Game - Online");
             stage.setScene(scene);
             stage.show();
 
-            // 2. Renderの環境変数に合わせてポートを自動判定する処理（お二人の完璧なコード！）
-            String portEnv = System.getenv("PORT");
-            int port = (portEnv != null) ? Integer.parseInt(portEnv) : 10000;
-            System.out.println("使用するポート番号: " + port);
+            System.out.println("🎮 ゲーム画面を起動しました！");
 
-            // 3. OkHttpClientの設定（型エラー対策済み）
+            // 2. OkHttpClientの設定（通信を安定させるお二人の優秀な部品）
             OkHttpClient okHttpClient = new OkHttpClient.Builder()
                     .connectTimeout(20, TimeUnit.SECONDS)
                     .readTimeout(20, TimeUnit.SECONDS)
                     .writeTimeout(20, TimeUnit.SECONDS)
                     .build();
 
-// 4. Socket.IOのオプション設定（★暗号化 HTTPS/WSS 対応版！）
+            // 3. Socket.IOのオプション設定
             IO.Options opts = new IO.Options();
             opts.forceNew = true;
             opts.reconnection = true;
-            opts.transports = new String[]{"polling", "websocket"};
 
-            // 🔒【超・決定版！】Javaを怒らせずに、暗号化(HTTPS/WSS)を強制するシンプルな方法
-            opts.secure = true;
-            // ⭕ 面倒なTrustManagerの設定を一切やめて、OkHttpClientのデフォルトに全てを任せる！
+            // 🔒 【超重要】Renderの仕様（最初はpolling、次にwebsocket）に100%適合させます！
+            opts.transports = new String[]{"polling", "websocket"};
+            opts.secure = true; // 暗号化(HTTPS/WSS)を有効化
+
+            // 通信の土台にokHttpClientをセット
             opts.webSocketFactory = okHttpClient;
             opts.callFactory = okHttpClient;
-            // 5. 接続先URL（RenderのサーバーURL）
-            String serverUrl = "https://demo-new-1.onrender.com";
-            System.out.println("🚀 サーバーに接続を試みています... URL: " + serverUrl);
 
-            // 6. ソケット初期化とイベント登録
+            // 4. RenderのサーバーURL（ここに繋ぎにいきます！）
+            String serverUrl = "https://demo-new-1.onrender.com";
+            System.out.println("🚀 Renderサーバーに接続を試みています... URL: " + serverUrl);
+
+            // 5. ソケット初期化
             socket = IO.socket(serverUrl, opts);
 
-            // 🟢 接続成功時のイベント
+            // 🟢 サーバーとガチッと接続成功したときのイベントログ！
             socket.on(Socket.EVENT_CONNECT, args -> {
                 Platform.runLater(() -> {
-                    System.out.println("🟢🟢🟢 [成功] Renderサーバーとの常時接続が確立しました！！！");
+                    System.out.println("🟢🟢🟢 [大成功] Renderサーバーとの常時接続が確立しました！！！");
                 });
             });
 
-            // 🔴 接続エラー時のイベント
+            // 🔴 万が一接続エラーが出たときのイベントログ
             socket.on(Socket.EVENT_CONNECT_ERROR, args -> {
                 Platform.runLater(() -> {
-                    System.out.println("❌ [エラー] 接続に失敗しました。理由: " + (args.length > 0 ? args[0] : "不明"));
+                    System.out.println("❌ [接続エラー] 理由: " + (args.length > 0 ? args[0] : "不明"));
                 });
             });
 
-            // 7. 接続開始！
+            // 6. 接続開始！！！
             socket.connect();
 
         } catch (Exception e) {
@@ -78,11 +76,11 @@ public class HelloApplication extends Application {
         }
     }
 
-    // ゲーム終了時にソケットを綺麗に閉じる処理
+    // ゲーム（画面）を閉じたときに、接続も綺麗に切断する処理
     @Override
     public void stop() {
         if (socket != null) {
-            System.out.println("🔌 サーバーとの接続を切断して終了します。");
+            System.out.println("🔌 サーバーとの接続を切断して安全に終了します。");
             socket.disconnect();
         }
     }
