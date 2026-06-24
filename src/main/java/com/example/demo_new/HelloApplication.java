@@ -7,89 +7,84 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import okhttp3.OkHttpClient;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 public class HelloApplication extends Application {
-    private static Socket socket;
+    private Socket socket;
 
     @Override
-    public void start(Stage stage) throws IOException {
-        // 1. サーバーへの接続を開始
-        connectToServer();
-
-        // 2. 画面（メニュー画面）の読み込み
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("hello-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 320, 240);
-        stage.setTitle("ネット対戦ゲーム！");
-        stage.setScene(scene);
-        stage.show();
-
-        // 3. アプリを閉じたら通信も安全に切断する設定
-        stage.setOnCloseRequest(windowEvent -> {
-            if (socket != null) {
-                socket.disconnect();
-                System.out.println("アプリ終了に伴い、ソケットを安全に切断しました。");
-            }
-            Platform.exit();
-            System.exit(0);
-        });
-    }
-
-    private void connectToServer() {
+    public void start(Stage stage) {
         try {
-            // 1. 安全なSSL（HTTPS用）のファクトリを準備
-            javax.net.ssl.SSLContext sslContext = javax.net.ssl.SSLContext.getDefault();
-            javax.net.ssl.SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
+            // 1. 画面の読み込み（既存のJavaFXの処理）
+            FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("hello-view.fxml"));
+            Scene scene = new Scene(fxmlLoader.load(), 320, 240);
+            stage.setTitle("JavaFX Game - Online");
+            stage.setScene(scene);
+            stage.show();
 
-            // 2. 信頼できる証明書マネージャーを取得
-            javax.net.ssl.TrustManagerFactory trustManagerFactory = javax.net.ssl.TrustManagerFactory.getInstance(
-                    javax.net.ssl.TrustManagerFactory.getDefaultAlgorithm()
-            );
-            trustManagerFactory.init((java.security.KeyStore) null);
-            javax.net.ssl.X509TrustManager trustManager = (javax.net.ssl.X509TrustManager) trustManagerFactory.getTrustManagers()[0];
+            // 2. Renderの環境変数に合わせてポートを自動判定する処理（お二人の完璧なコード！）
+            String portEnv = System.getenv("PORT");
+            int port = (portEnv != null) ? Integer.parseInt(portEnv) : 10000;
+            System.out.println("使用するポート番号: " + port);
 
-            // 3. 【ここが決定打】エラーの原因だったOkHttpClientを正しく組み立てる
-            okhttp3.OkHttpClient okHttpClient = new okhttp3.OkHttpClient.Builder()
-                    .sslSocketFactory(sslSocketFactory, trustManager)
+            // 3. OkHttpClientの設定（型エラー対策済み）
+            OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                    .connectTimeout(20, TimeUnit.SECONDS)
+                    .readTimeout(20, TimeUnit.SECONDS)
+                    .writeTimeout(20, TimeUnit.SECONDS)
                     .build();
 
-            // 4. Socket.IOのオプションを設定
+// 4. Socket.IOのオプション設定（★暗号化 HTTPS/WSS 対応版！）
             IO.Options opts = new IO.Options();
             opts.forceNew = true;
             opts.reconnection = true;
-            opts.transports = new String[]{"websocket"};
+            opts.transports = new String[]{"polling", "websocket"};
 
-            // ✨【これで解決】型エラー（'okhttp3.WebSocket.Factory'が必要）に完全適合させます！
+            // 🔒【超・決定版！】Javaを怒らせずに、暗号化(HTTPS/WSS)を強制するシンプルな方法
+            opts.secure = true;
+            // ⭕ 面倒なTrustManagerの設定を一切やめて、OkHttpClientのデフォルトに全てを任せる！
             opts.webSocketFactory = okHttpClient;
             opts.callFactory = okHttpClient;
-
+            // 5. 接続先URL（RenderのサーバーURL）
             String serverUrl = "https://demo-new-1.onrender.com";
-            System.out.println("サーバーに接続を試みています... URL: " + serverUrl);
+            System.out.println("🚀 サーバーに接続を試みています... URL: " + serverUrl);
 
+            // 6. ソケット初期化とイベント登録
             socket = IO.socket(serverUrl, opts);
 
-            // 接続イベント
+            // 🟢 接続成功時のイベント
             socket.on(Socket.EVENT_CONNECT, args -> {
-                javafx.application.Platform.runLater(() -> {
-                    System.out.println("👉 【大成功】Renderサーバーに正常に接続されました！");
+                Platform.runLater(() -> {
+                    System.out.println("🟢🟢🟢 [成功] Renderサーバーとの常時接続が確立しました！！！");
                 });
             });
 
+            // 🔴 接続エラー時のイベント
             socket.on(Socket.EVENT_CONNECT_ERROR, args -> {
-                System.out.println("❌ 接続エラーが発生しました");
+                Platform.runLater(() -> {
+                    System.out.println("❌ [エラー] 接続に失敗しました。理由: " + (args.length > 0 ? args[0] : "不明"));
+                });
             });
 
+            // 7. 接続開始！
             socket.connect();
 
         } catch (Exception e) {
-            System.out.println("接続中に予期せぬエラーが発生しました。");
+            System.out.println("💥 初期化中に予期せぬ例外が発生しました");
             e.printStackTrace();
         }
     }
-    // 他のコントローラー（HelloControllerなど）からソケットを使い回すためのメソッド
-    public static Socket getSocket() {
-        return socket;
+
+    // ゲーム終了時にソケットを綺麗に閉じる処理
+    @Override
+    public void stop() {
+        if (socket != null) {
+            System.out.println("🔌 サーバーとの接続を切断して終了します。");
+            socket.disconnect();
+        }
     }
 
     public static void main(String[] args) {
