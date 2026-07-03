@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<!-- 画面全体の枠組み（縦並びのレイアウト） -->
+<VBox alignment="CENTER" spacing="15.0" xmlns="http://javafx.com" xmlns:fx="http://javafx.com" fx:controller="com.example.demo_new.HelloController">
+    <!-- 画面のまわりの余白を設定 -->
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+
+    <!-- タイトル文字 -->
+    <Label text=" メインメニュー ">
+        <font>
+            <Font name="System Bold" size="18.0" />
+        </font>
+    </Label>
+
+    <!-- ️ マッチングボタン（押すと HelloController の onMatchingButtonClick が動きます） -->
+    <Button onAction="#onMatchingButtonClick" prefWidth="180.0" text="対戦マッチング" style="-fx-background-radius: 20; -fx-font-size: 14;" />
+
+    <!--  ルール説明ボタン（押すと HelloController の onRuleButtonClick が動きます） -->
+    <Button onAction="#onRuleButtonClick" prefWidth="180.0" text="ルール説明" style="-fx-background-radius: 20; -fx-font-size: 14;" />
+
+    <!--  ランキングボタン（押すと HelloController の onRankingButtonClick が動きます） -->
+    <Button onAction="#onRankingButtonClick" prefWidth="180.0" text="総合ランキング" style="-fx-background-radius: 20; -fx-font-size: 14;" />
+</VBox>
