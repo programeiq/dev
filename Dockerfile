@@ -7,7 +7,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # 【ここを修正！】スクショ通り、targetの中にある「server.jar」をガシッと掴んでコピーする！
-COPY target/server.jar /server.jar
+COPY target/server.jar ./server.jar
 
 ENV PORT=10000
 
