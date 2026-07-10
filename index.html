@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SPEED DEBATE</title>
+  <style>
+    body {
+      background-color: #1a1a1a;
+      color: #ffffff;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      margin: 0;
+    }
+    .container {
+      width: 100%;
+      max-width: 500px;
+    }
+    .player-info {
+      display: flex;
+      gap: 15px;
+      font-weight: bold;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+    .level { color: #00ffcc; }
+    h1 {
+      font-size: 32px;
+      font-weight: bold;
+      text-align: center;
+      margin: 10px 0 30px 0;
+    }
+    .button-group {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin-bottom: 30px;
+    }
+    button {
+      width: 160px;
+      height: 45px;
+      font-weight: bold;
+      font-size: 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-match {
+      background-color: #00ffcc;
+      color: #1a1a1a;
+    }
+    .btn-rank {
+      background-color: #333333;
+      color: #ffffff;
+      border: 1px solid #ffffff;
+    }
+    .rule-box {
+      background-color: #262626;
+      border-radius: 6px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+    .rule-title {
+      color: #00ffcc;
+      font-weight: bold;
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+    .rule-text {
+      font-size: 12px;
+      color: #cccccc;
+      margin: 4px 0;
+    }
+    .rule-alert { color: #ff3333; }
+    .status {
+      color: #666666;
+      font-size: 11px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="player-info">
+    <div>PLAYER: GUEST</div>
+    <div class="level">[Lv.100]</div>
+  </div>
+
+  <h1>SPEED DEBATE</h1>
+
+  <div class="button-group">
+    <button class="btn-match" onclick="sendRequest('match')">MATCHING</button>
+    <button class="btn-rank" onclick="sendRequest('ranking')">RANKING</button>
+  </div>
+
+  <div class="rule-box">
+    <div class="rule-title">RULE</div>
+    <div class="rule-text">・入力開始まで1秒ごとにライフが1減少します</div>
+    <div class="rule-text class=rule-alert">・ライフが0になった時点で敗北となります</div>
+    <div class="rule-text">・勝利：+20 / 敗北：-9（上限レベル1000）</div>
+  </div>
+
+  <div id="statusLabel" class="status">SERVER CONNECTED</div>
+</div>
+
+<script>
+  // ボタンを押したときにサーバーに電波を飛ばすJavaScript
+  function sendRequest(endpoint) {
+    const statusLabel = document.getElementById('statusLabel');
+    statusLabel.innerText = "CONNECTING...";
+
+    // 現在開いている自分のURL（Railway）の後ろに /match や /ranking をつけて通信する
+    fetch('/' + endpoint)
+            .then(response => response.text())
+            .then(data => {
+              statusLabel.innerText = "SERVER RESPONSE: " + data;
+            })
+            .catch(error => {
+              statusLabel.innerText = "CONNECTION ERROR: " + error;
+            });
+  }
+</script>
+</body>
+</html>

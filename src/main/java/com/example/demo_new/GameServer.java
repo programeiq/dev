@@ -7,7 +7,7 @@ public class GameServer {
     public static void main(String[] args) {
         // 1. Renderの環境変数からポート番号を自動で読み込む（お二人の完璧なロジック！）
         String portEnv = System.getenv("PORT");
-        int port = (portEnv != null) ? Integer.parseInt(portEnv) : 9092;
+        int port = (portEnv != null) ? Integer.parseInt(portEnv) : 10000;
 
         Configuration config = new Configuration();
         config.setHostname("0.0.0.0"); // すべての外からの接続を受け付ける設定

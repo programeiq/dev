@@ -3,29 +3,59 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<!-- 画面全体の枠組み（縦並びのレイアウト） -->
-<VBox alignment="CENTER" spacing="15.0" xmlns="http://javafx.com" xmlns:fx="http://javafx.com" fx:controller="com.example.demo_new.HelloController">
-    <!-- 画面のまわりの余白を設定 -->
+<VBox alignment="TOP_CENTER" spacing="20.0" prefWidth="500.0" prefHeight="420.0" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.demo_new.HelloController" style="-fx-background-color: #1a1a1a;">
     <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
     </padding>
 
-    <!-- タイトル文字 -->
-    <Label text=" メインメニュー ">
-        <font>
-            <Font name="System Bold" size="18.0" />
-        </font>
+    <HBox alignment="CENTER_LEFT" spacing="15.0">
+        <Label fx:id="nameLabel" text="PLAYER: GUEST" textFill="#ffffff">
+            <font><Font name="Segoe UI Bold" size="14.0"/></font>
+        </Label>
+        <Label fx:id="levelLabel" text="[Lv.100]" textFill="#00ffcc">
+            <font><Font name="Segoe UI Bold" size="14.0"/></font>
+        </Label>
+    </HBox>
+
+    <Label text="SPEED DEBATE" textFill="#ffffff">
+        <font><Font name="Segoe UI Bold" size="32.0"/></font>
     </Label>
 
-    <!-- ️ マッチングボタン（押すと HelloController の onMatchingButtonClick が動きます） -->
-    <Button onAction="#onMatchingButtonClick" prefWidth="180.0" text="対戦マッチング" style="-fx-background-radius: 20; -fx-font-size: 14;" />
+    <HBox alignment="CENTER" spacing="30.0">
+        <Button text="MATCHING" onAction="#onMatchButtonClick" prefWidth="160.0" prefHeight="45.0"
+                style="-fx-background-color: #00ffcc; -fx-text-fill: #1a1a1a; -fx-background-radius: 4; -fx-font-weight: bold; -fx-cursor: hand;">
+            <font><Font name="Segoe UI" size="14.0"/></font>
+        </Button>
+        <Button text="RANKING" onAction="#onRankButtonClick" prefWidth="160.0" prefHeight="45.0"
+                style="-fx-background-color: #333333; -fx-text-fill: #ffffff; -fx-background-radius: 4; -fx-font-weight: bold; -fx-border-color: #ffffff; -fx-border-radius: 4; -fx-cursor: hand;">
+            <font><Font name="Segoe UI" size="14.0"/></font>
+        </Button>
+    </HBox>
 
-    <!--  ルール説明ボタン（押すと HelloController の onRuleButtonClick が動きます） -->
-    <Button onAction="#onRuleButtonClick" prefWidth="180.0" text="ルール説明" style="-fx-background-radius: 20; -fx-font-size: 14;" />
+    <VBox spacing="8.0" style="-fx-background-color: #262626; -fx-background-radius: 6;">
+        <padding>
+            <Insets bottom="15.0" left="15.0" right="15.0" top="15.0"/>
+        </padding>
+        <Label text="RULE" textFill="#00ffcc">
+            <font><Font name="Segoe UI Bold" size="12.0"/></font>
+        </Label>
+        <Label text="・入力開始まで1秒ごとにライフが1減少します" textFill="#cccccc">
+            <font><Font name="Segoe UI" size="12.0"/></font>
+        </Label>
+        <Label text="・ライフが0になった時点で敗北となります" textFill="#ff3333">
+            <font><Font name="Segoe UI" size="12.0"/></font>
+        </Label>
+        <Label text="・勝利：+20 / 敗北：-9（上限レベル1000）" textFill="#cccccc">
+            <font><Font name="Segoe UI" size="12.0"/></font>
+        </Label>
+    </VBox>
 
-    <!--  ランキングボタン（押すと HelloController の onRankingButtonClick が動きます） -->
-    <Button onAction="#onRankingButtonClick" prefWidth="180.0" text="総合ランキング" style="-fx-background-radius: 20; -fx-font-size: 14;" />
+    <Label fx:id="statusLabel" text="SERVER CONNECTED" textFill="#666666">
+        <font><Font name="Segoe UI" size="11.0"/></font>
+    </Label>
 </VBox>
