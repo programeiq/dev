@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+app.use(express.static(__dirname));
 const PORT = process.env.PORT || 3000;
 
 // ダミーデータ（仕様書のランキング機能用の土台）
